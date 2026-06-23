@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Tag Manager – Conversion Tracking Demo</title>
+
+    <!-- ============================================================ -->
+    <!-- GOOGLE TAG MANAGER - REPLACE WITH YOUR GTM CONTAINER          -->
+    <!-- ============================================================ -->
+    <!-- Google Tag Manager -->
+    <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-WDPCNLNR');
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <!-- No direct gtag.js anymore – everything goes through GTM -->
+
+    <style>
+        /* ---- Same beautiful styles as before ---- */
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --primary: #4285f4;
+            --primary-hover: #3367d6;
+            --success: #0f9d58;
+            --success-bg: #e6f4ea;
+            --warning: #f9ab00;
+            --warning-bg: #fef7e0;
+            --danger: #ea4335;
+            --danger-bg: #fce8e6;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.05);
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg); color: var(--text); line-height: 1.6;
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+            padding: 24px 16px;
+        }
+
+        .header { text-align:center; margin-bottom:32px; }
+        .header .google-icon { width:48px; height:48px; margin-bottom:12px; }
+        .header h1 { font-size:1.75rem; font-weight:700; letter-spacing:-0.02em; color:#202124; }
+        .header p { color:var(--text-secondary); font-size:0.95rem; margin-top:4px; }
+
+        .status-bar { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:28px; }
+        .badge {
+            display:inline-flex; align-items:center; gap:6px;
+            padding:8px 14px; border-radius:20px; font-size:0.85rem; font-weight:500;
+            border:1px solid var(--border); background:var(--card-bg); box-shadow:var(--shadow);
+        }
+        .dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+        .dot.green { background:var(--success); }
+        .dot.yellow { background:var(--warning); }
+        .dot.red { background:var(--danger); }
+
+        .container { max-width:780px; width:100%; display:flex; flex-direction:column; gap:24px; }
+
+        .card {
+            background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius);
+            padding:28px 24px; box-shadow:var(--shadow); transition:box-shadow var(--transition);
+        }
+        .card:hover { box-shadow:var(--shadow-lg); }
+        .card h2 { font-size:1.2rem; font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+        .card h2 .icon { font-size:1.4rem; }
+        .card .subtitle { font-size:0.85rem; color:var(--text-secondary); margin-bottom:18px; }
+
+        .form-group { margin-bottom:16px; }
+        .form-group label { display:block; font-weight:600; font-size:0.9rem; margin-bottom:5px; }
+        .form-group input, .form-group select {
+            width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:8px;
+            font-size:0.95rem; font-family:inherit; transition:border-color var(--transition);
+            background:#fafbfc; color:var(--text);
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(66,133,244,0.12);
+        }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+        @media (max-width:500px) { .form-row { grid-template-columns:1fr; } }
+
+        .btn {
+            display:inline-flex; align-items:center; justify-content:center; gap:8px;
+            padding:11px 22px; border:none; border-radius:8px; font-size:0.95rem; font-weight:600;
+            cursor:pointer; transition:all var(--transition); font-family:inherit;
+        }
+        .btn-primary { background:var(--primary); color:#fff; }
+        .btn-primary:hover { background:var(--primary-hover); box-shadow:0 4px 12px rgba(66,133,244,0.3); }
+        .btn-success { background:var(--success); color:#fff; }
+        .btn-success:hover { background:#0b8043; box-shadow:0 4px 12px rgba(15,157,88,0.3); }
+        .btn-outline { background:transparent; border:1.5px solid var(--border); color:var(--text); }
+        .btn-outline:hover { background:#f1f5f9; border-color:#cbd5e1; }
+        .btn-full { width:100%; }
+
+        .conversion-log {
+            background:#1e293b; color:#e2e8f0; border-radius:10px; padding:16px 18px;
+            font-family:'SF Mono','Fira Code','Consolas',monospace; font-size:0.82rem;
+            max-height:240px; overflow-y:auto; line-height:1.7; white-space:pre-wrap; word-break:break-all;
+        }
+        .log-entry { padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+        .log-entry.success { color:#81c995; }
+        .log-entry.info { color:#8ab4f8; }
+        .log-entry.warn { color:#fdd663; }
+        .timestamp { color:#94a3b8; margin-right:8px; }
+        .log-empty { color:#64748b; font-style:italic; }
+
+        .toast {
+            position:fixed; top:24px; right:24px; background:#1e293b; color:#fff;
+            padding:14px 20px; border-radius:10px; font-weight:600; font-size:0.9rem;
+            z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.25);
+            animation: slideIn 0.35s ease-out, fadeOut 0.4s 2.6s ease-in forwards;
+            display:flex; align-items:center; gap:8px;
+        }
+        .toast.success { border-left:4px solid var(--success); }
+        .toast.error { border-left:4px solid var(--danger); }
+
+        @keyframes slideIn { from{transform:translateX(120%); opacity:0;} to{transform:translateX(0); opacity:1;} }
+        @keyframes fadeOut { from{opacity:1;} to{opacity:0; transform:translateY(-8px);} }
+
+        .code-ref {
+            background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px; padding:12px 16px;
+            font-family:'SF Mono','Fira Code','Consolas',monospace; font-size:0.78rem;
+            overflow-x:auto; color:#334155; margin-top:8px;
+        }
+        .comment { color:#6b7280; }
+        .tag { color:#4285f4; font-weight:600; }
+    </style>
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WDPCNLNR"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- Header -->
+    <div class="header">
+        <svg class="google-icon" viewBox="0 0 48 48"><path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.28-3.14.76-4.59l-7.98-6.19C1.02 16.36 0 20.09 0 24s1.02 7.64 2.56 10.78l7.97-6.19z"/><path fill="#EA4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        <h1>Google Tag Manager – Conversion Tracking</h1>
+        <p>Fires dataLayer events → GTM handles Google Ads & GA4 tags</p>
+    </div>
+
+    <div class="status-bar">
+        <span class="badge"><span class="dot green"></span> GTM Loaded</span>
+        <span class="badge"><span class="dot yellow"></span> Setup Tags in GTM</span>
+        <span class="badge" id="conversionCountBadge">🔥 Conversions: <strong id="convCount">0</strong></span>
+    </div>
+
+    <div class="container">
+        <!-- Lead Form Conversion -->
+        <div class="card">
+            <h2><span class="icon">📋</span> Lead Form Submission</h2>
+            <p class="subtitle">Submit → dataLayer push → GTM triggers Google Ads conversion & GA4 event.</p>
+            <form id="leadForm" novalidate>
+                <div class="form-row">
+                    <div class="form-group"><label for="fullName">Full Name</label><input type="text" id="fullName" placeholder="John Doe" required></div>
+                    <div class="form-group"><label for="email">Email Address</label><input type="email" id="email" placeholder="john@example.com" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label for="phone">Phone Number</label><input type="tel" id="phone" placeholder="+1 (555) 000-0000"></div>
+                    <div class="form-group"><label for="leadSource">Lead Source</label><select id="leadSource"><option value="google_ads">Google Ads</option><option value="organic_search">Organic Search</option><option value="social_media">Social Media</option><option value="referral">Referral</option></select></div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">📨 Submit Lead &amp; Track Conversion</button>
+            </form>
+        </div>
+
+        <!-- Purchase Conversion -->
+        <div class="card">
+            <h2><span class="icon">🛍️</span> Purchase Conversion</h2>
+            <p class="subtitle">Simulate a purchase – dataLayer event carries value, currency, transaction ID.</p>
+            <div class="form-row">
+                <div class="form-group"><label for="orderValue">Order Value ($)</label><input type="number" id="orderValue" value="149.99" step="0.01"></div>
+                <div class="form-group"><label for="orderCurrency">Currency</label><select id="orderCurrency"><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="INR">INR</option></select></div>
+            </div>
+            <div class="form-group"><label for="transactionId">Transaction ID (optional)</label><input type="text" id="transactionId" value="TXN-20260123-001"></div>
+            <button class="btn btn-success btn-full" id="purchaseBtn">💳 Complete Purchase &amp; Track</button>
+        </div>
+
+        <!-- Phone Call Conversion -->
+        <div class="card">
+            <h2><span class="icon">📞</span> Phone Call Conversion</h2>
+            <p class="subtitle">Click-to-call → dataLayer push → GTM fires call conversion tag.</p>
+            <div class="form-group"><label for="callPhone">Phone Number</label><input type="text" id="callPhone" value="+1-800-CONTACT"></div>
+            <button class="btn btn-outline btn-full" id="callBtn">📞 Simulate Call Click &amp; Track</button>
+        </div>
+
+        <!-- Event Log -->
+        <div class="card">
+            <h2><span class="icon">📜</span> Event Log</h2>
+            <p class="subtitle">All dataLayer pushes are logged here for verification.</p>
+            <div class="conversion-log" id="conversionLog"><span class="log-empty">No events yet. Submit a form or click a button…</span></div>
+            <div style="margin-top:12px; display:flex; gap:10px;">
+                <button class="btn btn-outline" id="clearLogBtn">🗑️ Clear Log</button>
+                <button class="btn btn-outline" id="testDataLayerBtn">🧪 Test dataLayer.push</button>
+            </div>
+        </div>
+
+        <!-- GTM Setup Instructions -->
+        <div class="card">
+            <h2><span class="icon">⚙️</span> Next: Configure GTM Tags</h2>
+            <p class="subtitle">This page only pushes events to the dataLayer. You must create the corresponding tags inside GTM.</p>
+            <div class="code-ref">
+                <span class="comment">// 1. In GTM, create a <strong>Google Ads Conversion Tracking</strong> tag.</span><br>
+                <span class="comment">// 2. Set the trigger to "Custom Event" with event name =</span> <strong>lead_conversion</strong>, <strong>purchase_conversion</strong>, <strong>call_conversion</strong>.<br>
+                <span class="comment">// 3. Map the dataLayer variables (value, currency, transaction_id) to the tag fields.</span><br>
+                <span class="comment">// 4. Optionally create a GA4 Event tag for the same events.</span>
+            </div>
+            <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+                <span class="badge"><span class="dot green"></span> Container: GTM-WDPCNLNR</span>
+                <span class="badge"><span class="dot yellow"></span> Setup triggers in GTM</span>
+                <span class="badge"><span class="dot green"></span> Use Preview mode to test</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            let conversionCount = 0;
+            const logEntries = [];
+
+            const conversionLog = document.getElementById('conversionLog');
+            const convCountEl = document.getElementById('convCount');
+
+            function showToast(msg, type='success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `${type==='success' ? '✅' : '❌'} ${msg}`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3100);
+            }
+
+            function addLogEntry(msg, type='info') {
+                const now = new Date();
+                const ts = now.toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit', fractionalSecondDigits:3});
+                logEntries.push({timestamp: ts, message: msg, type: type});
+                renderLog();
+            }
+
+            function renderLog() {
+                if (!logEntries.length) {
+                    conversionLog.innerHTML = '<span class="log-empty">No events yet…</span>';
+                    return;
+                }
+                conversionLog.innerHTML = logEntries.map(e =>
+                    `<div class="log-entry ${e.type}"><span class="timestamp">[${e.timestamp}]</span>${e.message}</div>`
+                ).join('');
+                conversionLog.scrollTop = conversionLog.scrollHeight;
+            }
+
+            function incrementCount() {
+                conversionCount++;
+                convCountEl.textContent = conversionCount;
+            }
+
+            // Push event to dataLayer (GTM will catch it)
+            function pushDataLayer(eventName, data) {
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    event: eventName,
+                    ...data
+                });
+            }
+
+            // ---- Lead form ----
+            document.getElementById('leadForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const fullName = document.getElementById('fullName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const source = document.getElementById('leadSource').value;
+
+                if (!fullName || !email) {
+                    showToast('Please fill Name and Email.', 'error');
+                    addLogEntry('⚠️ Lead form blocked – missing required fields.', 'warn');
+                    return;
+                }
+
+                const leadId = 'LEAD-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase();
+
+                // Push to dataLayer – GTM fires tags on 'lead_conversion'
+                pushDataLayer('lead_conversion', {
+                    conversion_label: 'LEAD_LABEL',   // Replace with your actual label
+                    value: 10.00,
+                    currency: 'USD',
+                    transaction_id: leadId,
+                    lead_name: fullName,
+                    lead_email: email,
+                    lead_phone: phone,
+                    lead_source: source
+                });
+
+                addLogEntry(`📋 Lead conversion pushed → dataLayer. ID: ${leadId}`, 'success');
+                incrementCount();
+                showToast('✅ Lead event sent to GTM!', 'success');
+                this.reset();
+                document.getElementById('leadSource').value = 'google_ads';
+            });
+
+            // ---- Purchase ----
+            document.getElementById('purchaseBtn').addEventListener('click', function() {
+                const value = parseFloat(document.getElementById('orderValue').value) || 0;
+                const currency = document.getElementById('orderCurrency').value;
+                const txId = document.getElementById('transactionId').value.trim() || 'TXN-' + Date.now();
+
+                if (value <= 0) {
+                    showToast('Enter a valid order value > $0.', 'error');
+                    addLogEntry('⚠️ Purchase blocked – invalid value.', 'warn');
+                    return;
+                }
+
+                pushDataLayer('purchase_conversion', {
+                    conversion_label: 'PURCHASE_LABEL', // Replace
+                    value: value,
+                    currency: currency,
+                    transaction_id: txId,
+                    items: [{ item_name: 'Demo Product', quantity: 1, price: value }]
+                });
+
+                addLogEntry(`🛍️ Purchase event pushed → ${currency} ${value.toFixed(2)}, TXN: ${txId}`, 'success');
+                incrementCount();
+                showToast(`✅ Purchase (${currency} ${value.toFixed(2)}) sent to GTM!`, 'success');
+                document.getElementById('transactionId').value = 'TXN-' + Date.now();
+            });
+
+            // ---- Phone call ----
+            document.getElementById('callBtn').addEventListener('click', function() {
+                const phone = document.getElementById('callPhone').value.trim() || '+1-800-CONTACT';
+                pushDataLayer('call_conversion', {
+                    conversion_label: 'CALL_LABEL', // Replace
+                    phone_number: phone
+                });
+                addLogEntry(`📞 Call event pushed → ${phone}`, 'success');
+                incrementCount();
+                showToast('✅ Call event sent to GTM!', 'success');
+            });
+
+            // ---- Clear log ----
+            document.getElementById('clearLogBtn').addEventListener('click', function() {
+                logEntries.length = 0;
+                renderLog();
+                showToast('Log cleared.', 'success');
+            });
+
+            // ---- Test dataLayer ----
+            document.getElementById('testDataLayerBtn').addEventListener('click', function() {
+                pushDataLayer('test_event', { test: true, timestamp: new Date().toISOString() });
+                addLogEntry('🧪 Test event pushed to dataLayer.', 'info');
+                showToast('Test event pushed – check GTM preview.', 'success');
+            });
+
+            // Initial messages
+            window.addEventListener('load', function() {
+                if (window.dataLayer && window.google_tag_manager) {
+                    addLogEntry('✅ GTM container loaded and active.', 'success');
+                } else {
+                    addLogEntry('⏳ GTM may still be loading. Check network/console.', 'info');
+                }
+                console.log('🚀 GTM Conversion Demo Ready. Container: GTM-WDPCNLNR');
+                console.log('💡 Push events via dataLayer, then set up tags in GTM.');
+            });
+        })();
+    </script>
+</body>
+</html>
